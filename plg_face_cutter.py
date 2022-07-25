@@ -6,6 +6,7 @@ import PIL.Image
 import scipy.ndimage
 import dlib
 import sys
+import re
 import pprint
 import cv2
 import glob
@@ -29,21 +30,7 @@ class LandmarksDetector:
             face_landmarks = [(item.x, item.y)
                               for item in self.shape_predictor(img, detection).parts()]
             yield face_landmarks
-#---------画像表示PIL-------------
-def show(img):
-    img= np.array(img, dtype=np.uint8)
-    cv2.imshow("test",img[:,:,::-1])
-    cv2.waitKey()
-# ---------- データを増やす --------------
-def mizumasi():
-    os.chdir("train")
-    for i in glob.glob("*.png"):
-        img=cv2.imread(i)
-        #print(i,img)
-        img=cv2.flip(img,1)
-        
-        cv2.imwrite("flip_"+i,img)
-    os.chdir("..")
+
 # ---------- 顔画像の切り出し --------------
 def image_align(src_file, dst_file, face_landmarks, output_size=1024, transform_size=4096, enable_padding=True):
     # Align function from FFHQ dataset pre-processing step
@@ -156,7 +143,14 @@ def image_align(src_file, dst_file, face_landmarks, output_size=1024, transform_
     # Save aligned image.
     img.save(dst_file, 'PNG')
 
-
+def my_imread(filename):
+    try:
+        n = np.fromfile(filename, np.uint8)
+        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
+        return img
+    except Exception as e:
+        print(e)
+        return None
 
 def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat",output_size=256,starts=0,step=0):
 
@@ -170,7 +164,7 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat",output
                 if (ii-starts)%step==0:
                     print(img_name,flush=True)
 
-                    img=cv2.imread(img_name)
+                    img=my_imread(img_name)
 
                     for i, face_landmarks in enumerate(landmarks_detector.get_landmarks(img), start=1):
                         face_img_name = f'{os.path.splitext(img_name)[0]}_trm_{i}.png'

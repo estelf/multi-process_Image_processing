@@ -3,32 +3,27 @@ import numpy as np
 import glob
 import os
 import sys
-import time
+from PIL import Image
 args=sys.argv
 
 
 starts=int(args[3])
 step=int(args[2])
 flname=args[1]
-def my_imread(filename):
-    try:
-        n = np.fromfile(filename, np.uint8)
-        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
-        return img
-    except Exception as e:
-        print(e)
-        return None
+def crop_center(img, crop_width, crop_height):
+    img_width, img_height = img.size
+    return img.crop(((img_width - crop_width) // 2,(img_height - crop_height) // 2,(img_width + crop_width) // 2,(img_height + crop_height) // 2))
 def main(starts,step,flname):
     os.chdir(flname)
     for i,sep in enumerate(glob.glob("*.png")):
         #print(i,sep)
         if (i-starts)%step==0:
             #print(i,starts,step)
-            img=my_imread(sep)
+            img = Image.open(sep)
 
             ####-------------------------------------####
-            img = cv2.Laplacian(img, cv2.CV_32F, ksize=5)
-            cv2.imwrite(sep,img)
+            img_crop_square = crop_center(img, min(img.size), min(img.size))
+            img_crop_square.save(sep)
             ####-------------------------------------####
 
 

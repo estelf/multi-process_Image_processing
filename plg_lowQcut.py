@@ -10,6 +10,8 @@ args=sys.argv
 starts=int(args[3])
 step=int(args[2])
 flname=args[1]
+model_path = '..\\brisque_model_live.yml'   # BRISQUEモデルデータ
+range_path = '..\\brisque_range_live.yml'   # BRISQUE範囲データ
 def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
@@ -25,10 +27,14 @@ def main(starts,step,flname):
         if (i-starts)%step==0:
             #print(i,starts,step)
             img=my_imread(sep)
-
             ####-------------------------------------####
-            img = cv2.Laplacian(img, cv2.CV_32F, ksize=5)
-            cv2.imwrite(sep,img)
+            score1 = cv2.quality.QualityBRISQUE_compute(img, model_path,range_path)
+
+            #print(score1[0])  #スコア表示させたいときだけ
+            
+            if score1[0]>20:  #数値を変えるだけ
+                os.remove(sep)
+
             ####-------------------------------------####
 
 

@@ -75,7 +75,7 @@ def expmain(flname,extensions,process):
     """
     画像の加工プロセスを作成する部分。
     """
-    start_time = time.perf_counter()
+
     print("プラグイン動作開始")
     print(f"python \"{str(extensions)}\" \"{flname}\" {process} {0}")
 
@@ -89,23 +89,18 @@ def expmain(flname,extensions,process):
     else:
         alive_chaker(polls,process_alive_list)
     
-    end_time = time.perf_counter()
-    
-    # 経過時間を出力(秒)
-    elapsed_time = end_time - start_time
-    print("\n経過時間",elapsed_time,"秒")
-    print()
-    # strat step
+
 
 parser = argparse.ArgumentParser(description='マルチプロセス、プラグイン機能に対応した画像一括編集・動画切り出しプログラムです。')
 parser.add_argument('folder', help='データのあるファルダ名')    # 必須の引数を追加
 parser.add_argument('-ns', '--non_split', help='すでに切り分けられた画像ファイルを使用するフラグ', action='store_true')   # よく使う引数なら省略形があると使う時に便利
 parser.add_argument('-p', '--process', help='プラグインのプロセス数 デフォルトは5', default=5, type=int)   # よく使う引数なら省略形があると使う時に便利
-parser.add_argument('-e', '--extensions', help='使用したいプラグインのパス')   # よく使う引数なら省略形があると使う時に便利
+parser.add_argument('-e', '--extensions', help='使用したいプラグインのパス。カンマ区切りで複数指定可')   # よく使う引数なら省略形があると使う時に便利
 
 args = parser.parse_args() 
 
 #print(args.non_split)
+print("-------------------------")
 if args.non_split is False:
     print('動画フォルダ名 : '+args.folder)
 else:
@@ -117,26 +112,46 @@ print("-------------------------")
 
 
 if args.non_split is False:
-    for i in glob.glob(args.folder+"//*"):
+    for num,i in enumerate(glob.glob(args.folder+"//*")):
+        start_time = time.perf_counter()#計測開始
+
         print(f"{i}を分離しています...")
 
         max_flame_num=get_flame_split(i)
         keta=len(str(max_flame_num))
-        flname=os.path.splitext(i.replace("\\","_"))[0]
-        os.makedirs(flname,exist_ok=True)
+        flname=os.path.splitext(i.split("\\")[-1])[0]
+        os.makedirs(str(num),exist_ok=True)
 
-        cmd=run_shell.run(f"ffmpeg -y -i \"{i}\" -vcodec png \"{flname}\\image_%0{keta}d.png\"")
+        cmd=run_shell.run(f"ffmpeg -y -i \"{i}\" -vcodec png \"{num}\\{flname[:15]}_%0{keta}d.png\"")
         if cmd.returncode != 0:
             print(f"失敗しました\n{cmd}")
             continue
         else:
+
             print("成功しました")
 
         if args.extensions:
-            expmain(flname,args.extensions,args.process)
+            for iii in str(args.extensions).split(","):
+                expmain(str(num),iii,args.process)
+
+        end_time = time.perf_counter()
+        # 経過時間を出力(秒)
+        elapsed_time = end_time - start_time
+        print("\n総処理時間",elapsed_time,"秒")
+        print()
+        # strat step
 else:
     if args.extensions:
-        expmain(args.folder,args.extensions,args.process)
+        start_time = time.perf_counter()#計測開始
+        for iii in str(args.extensions).split(","):
+            expmain(args.folder,iii,args.process)
+
+        end_time = time.perf_counter()
+        # 経過時間を出力(秒)
+        elapsed_time = end_time - start_time
+        print("\n総処理時間",elapsed_time,"秒")
+        print()
+
         
         
 
