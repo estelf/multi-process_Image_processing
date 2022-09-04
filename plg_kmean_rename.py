@@ -1,13 +1,13 @@
+"""
+kmeans法を用いて代表色名でリネームする
+"""
 import colorsys
 import cv2
 import numpy as np
 import glob
 import os
 import re
-import cv2
-import numpy as np
 import glob
-import os
 import sys
 import time
 args=sys.argv
