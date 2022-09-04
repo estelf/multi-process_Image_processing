@@ -1,3 +1,7 @@
+"""
+クオリティの低いデータを計算し削除する拡張機能
+
+"""
 import cv2
 import numpy as np
 import glob
