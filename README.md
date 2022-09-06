@@ -1,4 +1,4 @@
-# video_splitter
+# multi-process_Image_processing
 
 当プログラムはffmpegを使用しているので事前にffmpegのパスを通してください。  
 Pythonモジュールとしてcv2 , numpyを使用しています。
