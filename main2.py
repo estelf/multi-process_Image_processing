@@ -92,7 +92,7 @@ def expmain(flname,extensions,process):
 
 
 parser = argparse.ArgumentParser(description='マルチプロセス、プラグイン機能に対応した画像一括編集・動画切り出しプログラムです。')
-parser.add_argument('folder', help='データのあるファルダ名')    # 必須の引数を追加
+parser.add_argument('folder', help='データのあるフォルダ名')    # 必須の引数を追加
 parser.add_argument('-ns', '--non_split', help='すでに切り分けられた画像ファイルを使用するフラグ', action='store_true')   # よく使う引数なら省略形があると使う時に便利
 parser.add_argument('-p', '--process', help='プラグインのプロセス数 デフォルトは5', default=5, type=int)   # よく使う引数なら省略形があると使う時に便利
 parser.add_argument('-e', '--extensions', help='使用したいプラグインのパス。カンマ区切りで複数指定可')   # よく使う引数なら省略形があると使う時に便利
