@@ -8,17 +8,22 @@ import cv2
 import numpy as np
 
 
-args=sys.argv
+args = sys.argv
 
 
-starts=int(args[3])
-step=int(args[2])
-flname=args[1]
+starts = int(args[3])
+step = int(args[2])
+flname = args[1]
+
+
 def translate(img_pass):
-    img=my_imread(img_pass)
-    base,ext=os.path.splitext(img_pass)
-    my_imwrite(base+".png",img)
+    img = my_imread(img_pass)
+    base, ext = os.path.splitext(img_pass)
+    cv2.imshow("aa",img)
+    my_imwrite(base+".png", img)
     os.remove(img_pass)
+
+
 def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
@@ -27,6 +32,8 @@ def my_imread(filename):
     except Exception as e:
         print(e)
         return None
+
+
 def my_imwrite(filename, img):
     try:
         ext = os.path.splitext(filename)[1]
@@ -40,18 +47,21 @@ def my_imwrite(filename, img):
     except Exception as e:
         print(e)
         return False
-def main(starts,step,flname):
+
+
+def main(starts, step, flname):
     os.chdir(flname)
-    for i,sep in enumerate(glob.glob("*.*")):
-        if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
-            #print(i,sep)
-            if (i-starts)%step==0:
-                #print(i,starts,step)
+    for i, sep in enumerate(glob.glob("*.*")):
+        if re.search(r".*\.(jp.?g|webp|bmp)", str(sep), re.I):
+            # print(i,sep)
+            if (i-starts) % step == 0:
+                # print(i,starts,step)
                 translate(sep)
                 ####-------------------------------------####
 
-
     os.chdir("..")
+
+
 #start_time = time.perf_counter()
-main(starts,step,flname)
+main(starts, step, flname)
 #end_time = time.perf_counter()
