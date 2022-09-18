@@ -19,7 +19,7 @@ flname = args[1]
 def translate(img_pass):
     img = my_imread(img_pass)
     base, ext = os.path.splitext(img_pass)
-    cv2.imshow("aa",img)
+    #cv2.imshow("aa",img)
     my_imwrite(base+".png", img)
     os.remove(img_pass)
 #note 26702
