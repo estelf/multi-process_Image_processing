@@ -37,8 +37,8 @@ def main(starts,step,flname):
     os.chdir(flname)
     os.makedirs("OK",exist_ok=True)
     os.makedirs("NG",exist_ok=True)
-    for i,sep in enumerate(glob.glob("*.png")):
-        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+    for i,sep in enumerate(glob.glob("*.*")):
+        if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             #print(i,sep)
             if (i-starts)%step==0:
                 #print(i,starts,step)

@@ -36,7 +36,7 @@ def my_imread(filename):
 def main(starts,step,flname):
     os.chdir(flname)
     for i,sep in enumerate(glob.glob("*.*")):
-        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+        if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             #print(i,sep)
             if (i-starts)%step==0:
                 a = has(sep)

@@ -159,7 +159,7 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat",output
 
     dirlist_my=glob.glob("*.*")
     for ii,img_name in enumerate(dirlist_my):
-        if re.search(r".*\.j?pe?n?g$",str(i),re.I):
+        if re.search(r".*\.j?pe?n?g$",str(img_name),re.I):
             try:
                 if (ii-starts)%step==0:
                     print(img_name,flush=True)
