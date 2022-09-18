@@ -49,19 +49,20 @@ def make_filename(img,basename):
     return name+basename
 def main(starts,step,flname):
     os.chdir(flname)
-    for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img=my_imread(sep)
+    for i,sep in enumerate(glob.glob("*.*")):
+        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+            #print(i,sep)
+            if (i-starts)%step==0:
+                #print(i,starts,step)
+                img=my_imread(sep)
 
-            ####-------------------------------------####
-            try :
-                name=make_filename(img,sep)
-                os.rename(sep,name)
-            except Exception:
-                pass
-            ####-------------------------------------####
+                ####-------------------------------------####
+                try :
+                    name=make_filename(img,sep)
+                    os.rename(sep,name)
+                except Exception:
+                    pass
+                ####-------------------------------------####
 
 
     os.chdir("..")

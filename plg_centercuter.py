@@ -4,6 +4,7 @@ import glob
 import os
 import sys
 from PIL import Image
+import re
 args=sys.argv
 
 
@@ -15,16 +16,17 @@ def crop_center(img, crop_width, crop_height):
     return img.crop(((img_width - crop_width) // 2,(img_height - crop_height) // 2,(img_width + crop_width) // 2,(img_height + crop_height) // 2))
 def main(starts,step,flname):
     os.chdir(flname)
-    for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img = Image.open(sep)
+    for i,sep in enumerate(glob.glob("*.*")):
+        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+            #print(i,sep)
+            if (i-starts)%step==0:
+                #print(i,starts,step)
+                img = Image.open(sep)
 
-            ####-------------------------------------####
-            img_crop_square = crop_center(img, min(img.size), min(img.size))
-            img_crop_square.save(sep)
-            ####-------------------------------------####
+                ####-------------------------------------####
+                img_crop_square = crop_center(img, min(img.size), min(img.size))
+                img_crop_square.save(sep)
+                ####-------------------------------------####
 
 
     os.chdir("..")

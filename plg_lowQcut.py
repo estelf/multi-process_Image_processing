@@ -8,6 +8,7 @@ import glob
 import os
 import sys
 import time
+import re
 args=sys.argv
 
 
@@ -26,20 +27,21 @@ def my_imread(filename):
         return None
 def main(starts,step,flname):
     os.chdir(flname)
-    for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img=my_imread(sep)
-            ####-------------------------------------####
-            score1 = cv2.quality.QualityBRISQUE_compute(img, model_path,range_path)
+    for i,sep in enumerate(glob.glob("*.*")):
+        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+            #print(i,sep)
+            if (i-starts)%step==0:
+                #print(i,starts,step)
+                img=my_imread(sep)
+                ####-------------------------------------####
+                score1 = cv2.quality.QualityBRISQUE_compute(img, model_path,range_path)
 
-            #print(score1[0])  #スコア表示させたいときだけ
-            
-            if score1[0]>20:  #数値を変えるだけ
-                os.remove(sep)
+                #print(score1[0])  #スコア表示させたいときだけ
+                
+                if score1[0]>20:  #数値を変えるだけ
+                    os.remove(sep)
 
-            ####-------------------------------------####
+                ####-------------------------------------####
 
 
     os.chdir("..")

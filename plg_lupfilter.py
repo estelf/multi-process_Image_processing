@@ -4,6 +4,7 @@ import glob
 import os
 import sys
 import time
+import re
 args=sys.argv
 
 
@@ -18,18 +19,32 @@ def my_imread(filename):
     except Exception as e:
         print(e)
         return None
+def my_imwrite(filename, img):
+    try:
+        ext = os.path.splitext(filename)[1]
+        result, n = cv2.imencode(ext, img)
+        if result:
+            with open(filename, mode='w+b') as f:
+                n.tofile(f)
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e)
+        return False
 def main(starts,step,flname):
     os.chdir(flname)
     for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img=my_imread(sep)
+        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+            #print(i,sep)
+            if (i-starts)%step==0:
+                #print(i,starts,step)
+                img=my_imread(sep)
 
-            ####-------------------------------------####
-            img = cv2.Laplacian(img, cv2.CV_32F, ksize=5)
-            cv2.imwrite(sep,img)
-            ####-------------------------------------####
+                ####-------------------------------------####
+                img = cv2.Laplacian(img, cv2.CV_32F, ksize=5)
+                my_imwrite(sep,img)
+                ####-------------------------------------####
 
 
     os.chdir("..")

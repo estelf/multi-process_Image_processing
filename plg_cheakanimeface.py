@@ -7,7 +7,7 @@ import time
 import shutil
 import dlib
 from PIL import Image
-
+import re
 
 args=sys.argv
 
@@ -38,20 +38,21 @@ def main(starts,step,flname):
     os.makedirs("OK",exist_ok=True)
     os.makedirs("NG",exist_ok=True)
     for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img=my_imread(sep)
+        if re.search(r".*\.j?pe?n?g$", str(i), re.I):
+            #print(i,sep)
+            if (i-starts)%step==0:
+                #print(i,starts,step)
+                img=my_imread(sep)
 
-            ####-------------------------------------####
-            #print(sep)
-   
-            faces2=detect_dlib(img)
-            if len(faces2)>0:
-                shutil.move(sep,"OK")
-            else:
-                shutil.move(sep,"NG")
-            ####-------------------------------------####
+                ####-------------------------------------####
+                #print(sep)
+    
+                faces2=detect_dlib(img)
+                if len(faces2)>0:
+                    shutil.move(sep,"OK")
+                else:
+                    shutil.move(sep,"NG")
+                ####-------------------------------------####
 
 
     os.chdir("..")
