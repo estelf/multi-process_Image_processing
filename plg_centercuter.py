@@ -7,7 +7,9 @@ from PIL import Image
 import re
 args=sys.argv
 
-
+"""
+画像が正方形になるように両側もしくは上下から切り取る
+"""
 starts=int(args[3])
 step=int(args[2])
 flname=args[1]

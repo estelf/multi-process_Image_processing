@@ -15,7 +15,9 @@ starts = int(args[3])
 step = int(args[2])
 flname = args[1]
 
-
+"""
+jpgをpngにする
+"""
 def translate(img_pass):
     img = my_imread(img_pass)
     base, ext = os.path.splitext(img_pass)

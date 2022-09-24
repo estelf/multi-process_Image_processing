@@ -7,7 +7,9 @@ import sys
 import cv2
 import numpy as np
 
-
+"""
+ハッシュ名でリネームする
+"""
 args=sys.argv
 
 
