@@ -63,7 +63,7 @@ def main(starts, step, flname):
     os.chdir(flname)
     os.makedirs("face",exist_ok=True)
     for i, sep in enumerate(glob.glob("*.*")):
-        if re.search(r".*\.(jp.?g|webp|bmp)", str(sep), re.I):
+        if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             # print(i,sep)
             if (i-starts) % step == 0:
                 # print(i,starts,step)
