@@ -1,20 +1,19 @@
-import cv2
-import numpy as np
 import glob
 import os
-import sys
-import time
-import shutil
-import dlib
-from PIL import Image
 import re
+import shutil
+import sys
 
-args=sys.argv
+import cv2
+import dlib
+import numpy as np
+
+args = sys.argv
 
 
-starts=int(args[3])
-step=int(args[2])
-flname=args[1]
+starts = int(args[3])
+step = int(args[2])
+flname = args[1]
 
 
 def detect_dlib(image):
@@ -22,8 +21,9 @@ def detect_dlib(image):
 
     # 顔の検出
     faces = face_detector(image)
-    a=[[(rect.left(), rect.top()), (rect.right(), rect.bottom())] for rect in faces]
+    a = [[(rect.left(), rect.top()), (rect.right(), rect.bottom())] for rect in faces]
     return a
+
 
 def my_imread(filename):
     try:
@@ -33,33 +33,36 @@ def my_imread(filename):
     except Exception as e:
         print(e)
         return None
-def main(starts,step,flname):
+
+
+def main(starts, step, flname):
     os.chdir(flname)
-    os.makedirs("OK",exist_ok=True)
-    os.makedirs("NG",exist_ok=True)
-    for i,sep in enumerate(glob.glob("*.*")):
+    os.makedirs("OK", exist_ok=True)
+    os.makedirs("NG", exist_ok=True)
+    for i, sep in enumerate(glob.glob("*.*")):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
-            #print(i,sep)
-            if (i-starts)%step==0:
-                #print(i,starts,step)
-                img=my_imread(sep)
+            # print(i,sep)
+            if (i - starts) % step == 0:
+                # print(i,starts,step)
+                img = my_imread(sep)
 
-                ####-------------------------------------####
-                #print(sep)
-    
-                faces2=detect_dlib(img)
-                if len(faces2)>0:
-                    shutil.move(sep,"OK")
+                # ###-------------------------------------####
+                # print(sep)
+
+                faces2 = detect_dlib(img)
+                if len(faces2) > 0:
+                    shutil.move(sep, "OK")
                 else:
-                    shutil.move(sep,"NG")
-                ####-------------------------------------####
-
+                    shutil.move(sep, "NG")
+                # ###-------------------------------------####
 
     os.chdir("..")
-#start_time = time.perf_counter()
-main(starts,step,flname)
-#end_time = time.perf_counter()
- 
+
+
+# start_time = time.perf_counter()
+main(starts, step, flname)
+# end_time = time.perf_counter()
+
 # 経過時間を出力(秒)
-#elapsed_time = end_time - start_time
-#print(elapsed_time,"秒")
+# elapsed_time = end_time - start_time
+# print(elapsed_time,"秒")

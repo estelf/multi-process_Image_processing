@@ -2,11 +2,9 @@ import glob
 import os
 import re
 import sys
-import time
 
 import cv2
 import numpy as np
-
 
 args = sys.argv
 
@@ -18,13 +16,18 @@ flname = args[1]
 """
 jpgをpngにする
 """
+
+
 def translate(img_pass):
     img = my_imread(img_pass)
     base, ext = os.path.splitext(img_pass)
-    #cv2.imshow("aa",img)
-    my_imwrite(base+".png", img)
+    # cv2.imshow("aa",img)
+    my_imwrite(base + ".png", img)
     os.remove(img_pass)
-#note 26702
+
+
+# note 26702
+
 
 def my_imread(filename):
     try:
@@ -41,7 +44,7 @@ def my_imwrite(filename, img):
         ext = os.path.splitext(filename)[1]
         result, n = cv2.imencode(ext, img)
         if result:
-            with open(filename, mode='w+b') as f:
+            with open(filename, mode="w+b") as f:
                 n.tofile(f)
             return True
         else:
@@ -56,14 +59,14 @@ def main(starts, step, flname):
     for i, sep in enumerate(glob.glob("*.*")):
         if re.search(r".*\.(jp.?g|webp|bmp)", str(sep), re.I):
             # print(i,sep)
-            if (i-starts) % step == 0:
+            if (i - starts) % step == 0:
                 # print(i,starts,step)
                 translate(sep)
-                ####-------------------------------------####
+                # ###-------------------------------------####
 
     os.chdir("..")
 
 
-#start_time = time.perf_counter()
+# start_time = time.perf_counter()
 main(starts, step, flname)
-#end_time = time.perf_counter()
+# end_time = time.perf_counter()
