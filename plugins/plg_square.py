@@ -1,8 +1,7 @@
 import glob
 import os
-import re
 import sys
-
+import re
 import cv2
 import numpy as np
 
@@ -14,29 +13,84 @@ step = int(args[2])
 flname = args[1]
 
 
+def ryousika(img):
+    Z = img.reshape((-1, 3))
+    # np.float32型に変換
+    Z = np.float32(Z)
+
+    # k-meansの終了条件
+    # デフォルト値を使用
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    # 分割後のグループの数
+    K = 16
+    # k-means処理
+    _, label, center = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+
+    # np.uint8型に変換
+    center = np.uint8(center)
+    # グループごとにグループ内平均値を割り当て
+    res = center[label.flatten()]
+    return res
+
+
+def cal_border(arr):
+    arr = ryousika(arr)
+    unique0, freq0 = np.unique(arr[:, 0], return_counts=True)
+    unique1, freq1 = np.unique(arr[:, 1], return_counts=True)
+    unique2, freq2 = np.unique(arr[:, 2], return_counts=True)
+    print(unique0, freq0)
+    print(unique1, freq1)
+    print(unique2, freq2)
+    mode0 = unique0[np.argmax(freq0)]
+    mode1 = unique1[np.argmax(freq1)]
+    mode2 = unique2[np.argmax(freq2)]
+    return (np.array([mode0, mode1, mode2])).astype(np.uint8)
+
+
 def resize_img(img):
     """
     画像をpaddingし
 
     """
-    try:
-        height, width, _ = img.shape  # 画像の縦横サイズを取得
-    except Exception:
-        height, width = img.shape
+
+    height, width, _ = img.shape  # 画像の縦横サイズを取得
 
     diffsize = abs(height - width)
     padding_half = int(diffsize / 2)
 
     # 縦長画像→幅を拡張する
     if height > width:
+        # left = np.mean(img[:, 0], axis=0).astype(np.uint8)
+        # right = np.mean(img[:, -1], axis=0).astype(np.uint8)
+
+        left = cal_border(img[:, :16])
+        right = cal_border(img[:, -16:])
+        # print(left, right)
+
         padding_img = cv2.copyMakeBorder(
-            img, 0, 0, padding_half, height - (width + padding_half), cv2.BORDER_REFLECT
+            img, 0, 0, 0, height - (width + padding_half), cv2.BORDER_CONSTANT, value=right.tolist()
         )
+        padding_img = cv2.copyMakeBorder(padding_img, 0, 0, padding_half, 0, cv2.BORDER_CONSTANT, value=left.tolist())
+
+        padding_img[:, : padding_half + 3, :] = cv2.blur(padding_img[:, : padding_half + 3, :], (5, 5))
+        padding_img[:, width + padding_half - 3 :, :] = cv2.blur(padding_img[:, width + padding_half - 3 :, :], (5, 5))
+
     # 横長画像→高さを拡張する
     elif width > height:
+        top = cal_border(img[:16])
+        bottom = cal_border(img[-16:])
+
+        print(top, bottom)
         padding_img = cv2.copyMakeBorder(
-            img, padding_half, width - (height + padding_half), 0, 0, cv2.BORDER_REFLECT
+            img, 0, width - (height + padding_half), 0, 0, cv2.BORDER_CONSTANT, value=bottom.tolist()
         )
+        padding_img = cv2.copyMakeBorder(padding_img, padding_half, 0, 0, 0, cv2.BORDER_CONSTANT, value=top.tolist())
+
+        padding_img[: padding_half + 3, :, :] = cv2.blur(padding_img[: padding_half + 3, :, :], (5, 5))
+        padding_img[height + padding_half - 3 :, :, :] = cv2.blur(
+            padding_img[height + padding_half - 3 :, :, :], (5, 5)
+        )
+
     else:
         padding_img = img
     return padding_img
@@ -46,6 +100,9 @@ def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
         img = cv2.imdecode(n, cv2.IMREAD_COLOR)
+
+        if len(list(img.shape)) != 3:
+            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         return img
     except Exception as e:
         print(e)
@@ -67,6 +124,13 @@ def my_imwrite(filename, img):
         return False
 
 
+"""img = my_imread("000a4d5c2956a7c1058eaab08a547558.png")
+img = resize_img(img)
+cv2.imshow("a", img)
+cv2.waitKey()
+my_imwrite("test.png", img)"""
+
+
 def main(starts, step, flname):
     os.chdir(flname)
     for i, sep in enumerate(glob.glob("*.*")):
@@ -86,8 +150,3 @@ def main(starts, step, flname):
 
 # start_time = time.perf_counter()
 main(starts, step, flname)
-# end_time = time.perf_counter()
-
-# 経過時間を出力(秒)
-# elapsed_time = end_time - start_time
-# print(elapsed_time,"秒")
