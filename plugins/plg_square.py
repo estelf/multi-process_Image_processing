@@ -22,7 +22,7 @@ def ryousika(img):
     # デフォルト値を使用
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
     # 分割後のグループの数
-    K = 16
+    K = 8
     # k-means処理
     _, label, center = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
@@ -35,16 +35,11 @@ def ryousika(img):
 
 def cal_border(arr):
     arr = ryousika(arr)
-    unique0, freq0 = np.unique(arr[:, 0], return_counts=True)
-    unique1, freq1 = np.unique(arr[:, 1], return_counts=True)
-    unique2, freq2 = np.unique(arr[:, 2], return_counts=True)
-    print(unique0, freq0)
-    print(unique1, freq1)
-    print(unique2, freq2)
+    unique0, freq0 = np.unique(arr, return_counts=True, axis=0)
+    # print("a")
+    # print(unique0, freq0)
     mode0 = unique0[np.argmax(freq0)]
-    mode1 = unique1[np.argmax(freq1)]
-    mode2 = unique2[np.argmax(freq2)]
-    return (np.array([mode0, mode1, mode2])).astype(np.uint8)
+    return (np.array(mode0)).astype(np.uint8)
 
 
 def resize_img(img):
@@ -60,12 +55,10 @@ def resize_img(img):
 
     # 縦長画像→幅を拡張する
     if height > width:
-        # left = np.mean(img[:, 0], axis=0).astype(np.uint8)
-        # right = np.mean(img[:, -1], axis=0).astype(np.uint8)
 
         left = cal_border(img[:, :16])
         right = cal_border(img[:, -16:])
-        # print(left, right)
+        print("b", left, right)
 
         padding_img = cv2.copyMakeBorder(
             img, 0, 0, 0, height - (width + padding_half), cv2.BORDER_CONSTANT, value=right.tolist()
@@ -80,7 +73,7 @@ def resize_img(img):
         top = cal_border(img[:16])
         bottom = cal_border(img[-16:])
 
-        print(top, bottom)
+        print("b", top, bottom)
         padding_img = cv2.copyMakeBorder(
             img, 0, width - (height + padding_half), 0, 0, cv2.BORDER_CONSTANT, value=bottom.tolist()
         )
@@ -93,6 +86,7 @@ def resize_img(img):
 
     else:
         padding_img = img
+
     return padding_img
 
 
