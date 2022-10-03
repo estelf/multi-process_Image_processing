@@ -42,6 +42,33 @@ def cal_border(arr):
     return (np.array(mode0)).astype(np.uint8)
 
 
+def edge_blur(mask: np.array, padding_img: np.array, paddata):
+    # マスクはブレンド率のこと！！！！！！！
+    padding_img = np.copy(padding_img).astype(np.float32)
+    two_clored_img = np.zeros_like(padding_img).astype(np.float32)
+
+    t_h, t_w, _ = two_clored_img.shape
+
+    for i, sep in enumerate(paddata):
+        if sep:
+            if i == 0:
+                two_clored_img[: t_h // 2] = sep
+            elif i == 1:
+                two_clored_img[t_h // 2 :] = sep
+            elif i == 2:
+                two_clored_img[:, : t_w // 2] = sep
+            elif i == 3:
+                two_clored_img[:, t_w // 2 :] = sep
+
+    kernel = np.ones((27, 27), np.uint8)
+    # エロージョンで白部分を減らす
+    mask = cv2.erode(np.copy(mask), kernel, iterations=1).astype(np.float32)
+    mask = cv2.GaussianBlur(mask, (5, 5), 0)
+    mask = cv2.blur(mask, (9, 9), 3)
+    tem_img_1 = np.copy(padding_img).astype(np.float32)
+    return (two_clored_img + (tem_img_1 - two_clored_img) * (mask / 255)).astype(np.uint8)
+
+
 def resize_img(img):
     """
     画像をpaddingし
@@ -52,6 +79,10 @@ def resize_img(img):
 
     diffsize = abs(height - width)
     padding_half = int(diffsize / 2)
+    # マスク用に画像本体部分が255になるようなデータ生成
+    mask = np.copy(img)
+    mask[:] = 255
+    # print(mask.shape)
 
     # 縦長画像→幅を拡張する
     if height > width:
@@ -65,8 +96,13 @@ def resize_img(img):
         )
         padding_img = cv2.copyMakeBorder(padding_img, 0, 0, padding_half, 0, cv2.BORDER_CONSTANT, value=left.tolist())
 
-        padding_img[:, : padding_half + 3, :] = cv2.blur(padding_img[:, : padding_half + 3, :], (5, 5))
-        padding_img[:, width + padding_half - 3 :, :] = cv2.blur(padding_img[:, width + padding_half - 3 :, :], (5, 5))
+        # マスク
+
+        mask = cv2.copyMakeBorder(
+            mask, 0, 0, padding_half, height - (width + padding_half), cv2.BORDER_CONSTANT, value=(0, 0, 0)
+        )
+
+        padding_img = edge_blur(mask, padding_img, (0, 0, left.tolist(), right.tolist()))
 
     # 横長画像→高さを拡張する
     elif width > height:
@@ -79,10 +115,11 @@ def resize_img(img):
         )
         padding_img = cv2.copyMakeBorder(padding_img, padding_half, 0, 0, 0, cv2.BORDER_CONSTANT, value=top.tolist())
 
-        padding_img[: padding_half + 3, :, :] = cv2.blur(padding_img[: padding_half + 3, :, :], (5, 5))
-        padding_img[height + padding_half - 3 :, :, :] = cv2.blur(
-            padding_img[height + padding_half - 3 :, :, :], (5, 5)
+        mask = cv2.copyMakeBorder(
+            mask, padding_half, width - (height + padding_half), 0, 0, cv2.BORDER_CONSTANT, value=(0, 0, 0)
         )
+
+        padding_img = edge_blur(mask, padding_img, (top.tolist(), bottom.tolist(), 0, 0))
 
     else:
         padding_img = img
