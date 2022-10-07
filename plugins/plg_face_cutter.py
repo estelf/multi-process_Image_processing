@@ -9,6 +9,7 @@ import dlib
 import numpy as np
 import PIL.Image
 import scipy.ndimage
+import time
 
 
 # --------- ランドマーク検出 -------------
@@ -186,6 +187,7 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", outpu
     landmarks_detector = LandmarksDetector(landmarks_model_path)
 
     dirlist_my = glob.glob("*.*")
+    time.sleep(1)
     for ii, img_name in enumerate(dirlist_my):
         if re.search(r".*\.j?pe?n?g$", str(img_name), re.I):
             try:

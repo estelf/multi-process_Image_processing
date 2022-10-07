@@ -8,11 +8,14 @@ import glob
 import os
 import sys
 import time
-args=sys.argv
+import re
 
-starts=int(args[3])
-step=int(args[2])
-flname=args[1]
+args = sys.argv
+
+starts = int(args[3])
+step = int(args[2])
+flname = args[1]
+
 
 def my_imread(filename):
     try:
@@ -22,26 +25,32 @@ def my_imread(filename):
     except Exception as e:
         print(e)
         return None
-def main(starts,step,flname):
+
+
+def main(starts, step, flname):
     os.chdir(flname)
-    for i,sep in enumerate(glob.glob("*.png")):
-        #print(i,sep)
-        if (i-starts)%step==0:
-            #print(i,starts,step)
-            img=my_imread(sep)
-            ####-------------------------------------####
-            h,w,_=img.shape
-            if h*w<256**2 or (h<200 and w<200):
-                os.remove(sep)
+    aldf = glob.glob("*.*")
+    time.sleep(1)
+    for i, sep in enumerate(aldf):
+        if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
+            # print(i,sep)
+            if (i - starts) % step == 0:
+                # print(i,starts,step)
+                img = my_imread(sep)
+                # ###-------------------------------------####
+                h, w, _ = img.shape
+                if h * w < 256**2 or (h < 200 and w < 200):
+                    os.remove(sep)
 
-            ####-------------------------------------####
-
+                # ###-------------------------------------####
 
     os.chdir("..")
-#start_time = time.perf_counter()
-main(starts,step,flname)
-#end_time = time.perf_counter()
- 
+
+
+# start_time = time.perf_counter()
+main(starts, step, flname)
+# end_time = time.perf_counter()
+
 # 経過時間を出力(秒)
-#elapsed_time = end_time - start_time
-#print(elapsed_time,"秒")
+# elapsed_time = end_time - start_time
+# print(elapsed_time,"秒")

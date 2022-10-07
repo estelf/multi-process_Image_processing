@@ -5,6 +5,7 @@ import sys
 
 import cv2
 import numpy as np
+import time
 
 args = sys.argv
 
@@ -41,7 +42,9 @@ def my_imwrite(filename, img):
 
 def main(starts, step, flname):
     os.chdir(flname)
-    for i, sep in enumerate(glob.glob("*.*")):
+    aldf = glob.glob("*.*")
+    time.sleep(1)
+    for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             # print(i,sep)
             if (i - starts) % step == 0:

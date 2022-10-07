@@ -7,6 +7,7 @@ import sys
 import cv2
 import dlib
 import numpy as np
+import time
 
 args = sys.argv
 
@@ -39,7 +40,9 @@ def main(starts, step, flname):
     os.chdir(flname)
     os.makedirs("OK", exist_ok=True)
     os.makedirs("NG", exist_ok=True)
-    for i, sep in enumerate(glob.glob("*.*")):
+    aldf = glob.glob("*.*")
+    time.sleep(1)
+    for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             # print(i,sep)
             if (i - starts) % step == 0:

@@ -3,6 +3,7 @@ import hashlib
 import os
 import re
 import sys
+import time
 
 import cv2
 import numpy as np
@@ -43,7 +44,9 @@ def my_imread(filename):
 
 def main(starts, step, flname):
     os.chdir(flname)
-    for i, sep in enumerate(glob.glob("*.*")):
+    aldf = glob.glob("*.*")
+    time.sleep(1)
+    for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             # print(i,sep)
             if (i - starts) % step == 0:
@@ -60,7 +63,11 @@ def main(starts, step, flname):
 
 
 # start_time = time.perf_counter()
-main(starts, step, flname)
+try:
+    main(starts, step, flname)
+except Exception as e:
+    with open(f"{starts}_error.txt", "w") as f:
+        f.write(str(e))
 # end_time = time.perf_counter()
 
 # 経過時間を出力(秒)
