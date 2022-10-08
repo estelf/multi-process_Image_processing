@@ -19,7 +19,7 @@ flname = args[1]
 def detect_contour(path):
 
     # 画像を読込
-    src = my_imread(path, cv2.IMREAD_COLOR)
+    src = my_imread(path)
     # src = src[:, 110:, :]
     # グレースケール画像へ変換
     # gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
