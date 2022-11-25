@@ -55,8 +55,8 @@ def main(starts, step, flname):
                 h, w, c = img.shape
                 if c > 3:
                     flg = np.where(img[:, :, 3] < 10, True, False)
-                    for i, sep in enumerate(flg):
-                        for ii, sepii in enumerate(sep):
+                    for i, sep2 in enumerate(flg):
+                        for ii, sepii in enumerate(sep2):
                             if sepii:
                                 # print(img[i][ii])
                                 img[i][ii] = [255, 255, 255, 255]

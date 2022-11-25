@@ -52,7 +52,7 @@ def main(starts, step, flname):
                 # print(i,starts,step)
                 img = my_imread(sep)
                 # ###-------------------------------------####
-                img = cv2.resize(img, (1024, 1024))
+                img = cv2.resize(img, (256,256))
                 my_imwrite(sep, img)
                 # ###-------------------------------------####
 
