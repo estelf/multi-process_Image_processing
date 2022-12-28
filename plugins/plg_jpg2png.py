@@ -60,7 +60,7 @@ def main(starts, step, flname):
     aldf = glob.glob("*.*")
     time.sleep(1)
     for i, sep in enumerate(aldf):
-        if re.search(r".*\.(jp.?g|webp|bmp)", str(sep), re.I):
+        if re.search(r".*\.(jp.?g|pam|webp|gif|bmp)", str(sep), re.I):
             # print(i,sep)
             if (i - starts) % step == 0:
                 # print(i,starts,step)

@@ -61,7 +61,8 @@ def cal_border(arr):
 
 
 # ---------- 顔画像の切り出し --------------
-def image_align(src_file, dst_file, face_landmarks, output_size=1024, transform_size=4096, enable_padding=True):
+def image_align(src_file, face_landmarks, output_size=1024, enable_padding=True):
+    transform_size = output_size * 4
     # Align function from FFHQ dataset pre-processing step
     # https://github.com/NVlabs/ffhq-dataset/blob/master/download_ffhq.py
     lm = np.array(face_landmarks)
@@ -194,7 +195,7 @@ def image_align(src_file, dst_file, face_landmarks, output_size=1024, transform_
         # PIL
         img = PIL.Image.fromarray(img, "RGB")
 
-    # Transform.
+    # Transform.平面的に傾いているものを直す
     img = img.transform(
         (transform_size, transform_size),
         PIL.Image.Transform.QUAD,
@@ -205,7 +206,8 @@ def image_align(src_file, dst_file, face_landmarks, output_size=1024, transform_
         img = img.resize((output_size, output_size), PIL.Image.Resampling.LANCZOS)
 
     # Save aligned image.
-    img.save(dst_file, "PNG")
+
+    return img
 
 
 def my_imread(filename):
@@ -235,18 +237,15 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", outpu
                     # cv2.imshow("a1", img)
                     # cv2.waitKey()
                     for i, face_landmarks in enumerate(landmarks_detector.get_landmarks(img), start=1):
-                        face_img_name = f"{os.path.splitext(img_name)[0]}_trm_{i}.png"
-
-                        aligned_face_path = face_img_name
+                        aligned_face_path = f"{os.path.splitext(img_name)[0]}_trm_{i}.png"
 
                         # print("st")
-                        image_align(
+                        img = image_align(
                             PIL.Image.fromarray(img[:, :, ::-1]),
-                            aligned_face_path,
                             face_landmarks,
                             output_size=output_size,
-                            transform_size=1024,
                         )
+                        img.save(aligned_face_path, "PNG")
                         # print("ed")
                     else:
                         os.remove(img_name)

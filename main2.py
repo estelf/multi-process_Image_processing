@@ -2,10 +2,6 @@
 プログラム
 マルチプロセス、プラグイン機能に対応した画像一括編集・動画切り出しプログラムです
 
-
-
-
-
 """
 import argparse
 import glob
@@ -78,7 +74,7 @@ def get_flame_split(filename):
     return int(max_flame_num)
 
 
-def alive_chaker(polls, process_alive_list):
+def alive_check(polls, process_alive_list):
     """
     リストに入ったプロセス情報の実行状況を出力する
     """
@@ -112,11 +108,11 @@ def expmain(flname, extensions, process):
 
     polls = [i.poll() for i in process_alive_list]
     while None in polls:
-        alive_chaker(polls, process_alive_list)
+        alive_check(polls, process_alive_list)
 
         polls = [i.poll() for i in process_alive_list]
     else:
-        alive_chaker(polls, process_alive_list)
+        alive_check(polls, process_alive_list)
 
 
 parser = argparse.ArgumentParser(description="マルチプロセス、プラグイン機能に対応した画像一括編集・動画切り出しプログラムです。")
@@ -169,7 +165,7 @@ if args.non_split is False:
         elapsed_time = end_time - start_time
         print("\n総処理時間", elapsed_time, "秒")
         print()
-        # strat step
+        # straw step
 else:
     if args.extensions:
         start_time = time.perf_counter()  # 計測開始

@@ -1,5 +1,4 @@
 import glob
-import hashlib
 import os
 import re
 import sys
@@ -19,19 +18,6 @@ step = int(args[2])
 flname = args[1]
 
 
-def has(x):
-    algo = "md5"
-    h = hashlib.new(algo)
-    Length = hashlib.new(algo).block_size * 0x800
-    path = x
-    with open(path, "rb") as f:
-        BinaryData = f.read(Length)
-        while BinaryData:
-            h.update(BinaryData)
-            BinaryData = f.read(Length)
-    return h.hexdigest()
-
-
 def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
@@ -45,12 +31,15 @@ def my_imread(filename):
 def main(starts, step, flname):
     os.chdir(flname)
     aldf = glob.glob("*.*")
+    hash_func = cv2.img_hash.PHash_create()
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
             # print(i,sep)
             if (i - starts) % step == 0:
-                a = has(sep)
+                sample_image01 = my_imread(sep)
+                tem = hash_func.compute(sample_image01)[0]
+                a = "".join([hex(i)[2:] for i in tem])
                 _, ext = os.path.splitext(sep)
                 if os.path.exists(a + ext):
                     os.remove(sep)

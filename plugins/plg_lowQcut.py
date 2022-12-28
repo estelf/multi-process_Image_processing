@@ -46,7 +46,7 @@ def main(starts, step, flname):
 
                 # print(score1[0])  #スコア表示させたいときだけ
 
-                if score1[0] > 20:  # 数値を変えるだけ
+                if score1[0] > 47:  # 数値を変えるだけ
                     os.remove(sep)
 
                 # ###-------------------------------------### #

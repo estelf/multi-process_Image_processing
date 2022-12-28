@@ -12,7 +12,7 @@ starts = int(args[3])
 step = int(args[2])
 flname = args[1]
 """
-ファイル名を入力するとアルファチャンネルを削除し白で埋めた画像が表示されます。
+256にリサイズ(このまま)
 """
 
 
@@ -52,7 +52,7 @@ def main(starts, step, flname):
                 # print(i,starts,step)
                 img = my_imread(sep)
                 # ###-------------------------------------####
-                img = cv2.resize(img, (256,256))
+                img = cv2.resize(img, (256, 256))
                 my_imwrite(sep, img)
                 # ###-------------------------------------####
 
