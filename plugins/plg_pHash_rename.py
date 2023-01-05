@@ -41,10 +41,10 @@ def main(starts, step, flname):
                 tem = hash_func.compute(sample_image01)[0]
                 a = "".join([hex(i)[2:] for i in tem])
                 _, ext = os.path.splitext(sep)
-                if os.path.exists(a + ext):
-                    os.remove(sep)
-                else:
+                try:
                     os.rename(sep, a + ext)
+                except FileExistsError:
+                    os.remove(sep)
 
                 # ###-------------------------------------####
 

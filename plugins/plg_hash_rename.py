@@ -52,10 +52,10 @@ def main(starts, step, flname):
             if (i - starts) % step == 0:
                 a = has(sep)
                 _, ext = os.path.splitext(sep)
-                if os.path.exists(a + ext):
-                    os.remove(sep)
-                else:
+                try:
                     os.rename(sep, a + ext)
+                except FileExistsError:
+                    os.remove(sep)
 
                 # ###-------------------------------------####
 
