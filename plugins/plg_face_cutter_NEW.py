@@ -214,7 +214,7 @@ def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
         img = cv2.imdecode(n, cv2.IMREAD_COLOR)
-        return img
+        return img[:,:,::-1]
     except Exception as e:
         print(e)
         return None
@@ -229,29 +229,27 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", outpu
     time.sleep(1)
     for ii, img_name in enumerate(dirlist_my):
         if re.search(r".*\.j?pe?n?g$", str(img_name), re.I):
-            try:
-                if (ii - starts) % step == 0:
-                    print(img_name, flush=True)
+            if (ii - starts) % step == 0:
+                print(img_name, flush=True)
 
-                    img = my_imread(img_name)
-                    # cv2.imshow("a1", img)
-                    # cv2.waitKey()
-                    for i, face_landmarks in enumerate(landmarks_detector.get_landmarks(img), start=1):
-                        aligned_face_path = f"{os.path.splitext(img_name)[0]}_trm_{i}.png"
+                imgs = my_imread(img_name)
+                # cv2.imshow("a1", img)
+                # cv2.waitKey()
+                for i, face_landmarks in enumerate(landmarks_detector.get_landmarks(imgs), start=1):
+                    aligned_face_path = f"{os.path.splitext(img_name)[0]}_trm_{i}.png"
 
-                        # print("st")
-                        img = image_align(
-                            PIL.Image.fromarray(img[:, :, ::-1]),
-                            face_landmarks,
-                            output_size=output_size,
-                        )
-                        img.save(aligned_face_path, "PNG")
-                        # print("ed")
-                    else:
-                        os.remove(img_name)
-            except Exception as e:
-                print(e)
-                continue
+                    # print("st")
+                    img = image_align(
+                        PIL.Image.fromarray(imgs),
+                        face_landmarks,
+                        output_size=output_size,
+                    )
+                    img.save(aligned_face_path, "PNG")
+                    # print("ed")
+                else:
+                    print(img_name)
+                    os.remove(img_name)
+
 
     print("FINISH!!!", flush=True)
 
