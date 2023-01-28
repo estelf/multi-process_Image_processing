@@ -8,7 +8,7 @@ import glob
 import os
 import subprocess
 import time
-
+import re
 import cv2
 
 # 顔切り抜き　シングル 452.9806762999997
@@ -139,32 +139,35 @@ print("-------------------------")
 
 if args.non_split is False:
     for num, i in enumerate(glob.glob(args.folder + "//*")):
-        start_time = time.perf_counter()  # 計測開始
+        if re.search(r".*\.mp4|mkv|ts|m2ts|webm$", str(i), re.I):
+            start_time = time.perf_counter()  # 計測開始
 
-        print(f"{i}を分離しています...")
+            print(f"{i}を分離しています...")
 
-        max_flame_num = get_flame_split(i)
-        keta = len(str(max_flame_num))
-        flname = os.path.splitext(i.split("\\")[-1])[0]
-        os.makedirs(str(num), exist_ok=True)
+            max_flame_num = get_flame_split(i)
+            keta = len(str(max_flame_num))
+            flname = os.path.splitext(i.split("\\")[-1])[0]
+            os.makedirs(str(num), exist_ok=True)
 
-        cmd = run_shell.run(f'ffmpeg -y -i "{i}" -vcodec png "{num}\\{flname[:15]}_%0{keta}d.png"')
-        if cmd.returncode != 0:
-            print(f"失敗しました\n{cmd}")
-            continue
+            cmd = run_shell.run(f'ffmpeg -y -i "{i}" -vcodec png "{num}\\{flname[:15]}_%0{keta}d.png"')
+            if cmd.returncode != 0:
+                print(f"失敗しました\n{cmd}")
+                continue
+            else:
+
+                print("成功しました")
+
+            if args.extensions:
+                for iii in str(args.extensions).split(","):
+                    expmain(str(num), iii, args.process)
+
+            end_time = time.perf_counter()
+            # 経過時間を出力(秒)
+            elapsed_time = end_time - start_time
+            print("\n総処理時間", elapsed_time, "秒")
+            print()
         else:
-
-            print("成功しました")
-
-        if args.extensions:
-            for iii in str(args.extensions).split(","):
-                expmain(str(num), iii, args.process)
-
-        end_time = time.perf_counter()
-        # 経過時間を出力(秒)
-        elapsed_time = end_time - start_time
-        print("\n総処理時間", elapsed_time, "秒")
-        print()
+            print(f"未対応file{i}")
         # straw step
 else:
     if args.extensions:
