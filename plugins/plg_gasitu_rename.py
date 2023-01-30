@@ -21,7 +21,7 @@ flname = args[1]
 def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
-        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
+        img = cv2.imdecode(n, cv2.IMREAD_GRAYSCALE)
         return img
     except Exception as e:
         print(e)
@@ -37,6 +37,9 @@ def main(starts, step, flname):
             # print(i,sep)
             if (i - starts) % step == 0:
                 img = my_imread(sep)
+                if img is None:
+                    break
+
                 img = cv2.blur(img, (11, 11))
                 # ###-------------------------------------### #
                 img2 = cv2.Laplacian(img, cv2.CV_32F, ksize=5).var()

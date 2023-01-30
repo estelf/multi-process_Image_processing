@@ -80,16 +80,16 @@ def alive_check(polls, process_alive_list):
     """
     for iii, seps in enumerate(polls):
         if iii == 0:
-            print("||", end="", flush=True)
+            print("║", end="", flush=True)
 
-        print(f"プロセス{iii}", end="", flush=True)
+        print(f"task{iii}", end="", flush=True)
         if seps is None:
-            print(" 実行中|| ", end="", flush=True)
+            print(" \033[36m█\033[m║ ", end="", flush=True)
         else:
             if process_alive_list[iii].returncode != 0:
-                print("エラー|| ", end="", flush=True)
+                print(" \033[31m█\033[m║ ", end="", flush=True)
             else:
-                print("  終了 || ", end="", flush=True)
+                print(" \033[32m█\033[m║ ", end="", flush=True)
     else:
         print("", end="\r", flush=True)
 
