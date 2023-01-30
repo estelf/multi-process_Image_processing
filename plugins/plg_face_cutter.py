@@ -212,7 +212,8 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", outpu
                         # print("ed")
                     else:
                         os.remove(img_name)
-            except Exception:
+            except (FileExistsError, PermissionError):
+                time.sleep(1)
                 continue
 
     print("FINISH!!!", flush=True)
@@ -222,6 +223,12 @@ args = sys.argv
 starts = int(args[3])
 step = int(args[2])
 flname = args[1]
-os.chdir(flname)
-main(starts=int(args[3]), step=int(args[2]))
-os.chdir("..")
+
+try:
+    os.chdir(flname)
+    main(starts=int(args[3]), step=int(args[2]))
+    os.chdir("..")
+except Exception as e:
+    with open(f"{starts}_error.txt", "w") as f:
+        f.write(str(e))
+    exit(1)

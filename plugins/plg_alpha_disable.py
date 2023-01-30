@@ -63,7 +63,8 @@ def main(starts, step, flname):
 
                     img = img[:, :, :3]
                     my_imwrite(sep, img)
-            except Exception:
+            except (FileExistsError, PermissionError):
+                time.sleep(1)
                 pass
             # ###-------------------------------------####
 
@@ -71,7 +72,12 @@ def main(starts, step, flname):
 
 
 # start_time = time.perf_counter()
-main(starts, step, flname)
+try:
+    main(starts, step, flname)
+except Exception as e:
+    with open(f"{starts}_error.txt", "w") as f:
+        f.write(str(e))
+    exit(1)
 # end_time = time.perf_counter()
 
 # 経過時間を出力(秒)

@@ -101,6 +101,7 @@ def expmain(flname, extensions, process):
 
     print("プラグイン動作開始")
     print(f'python "{str(extensions)}" "{flname}" {process} {0}')
+    print("実行状態凡例 実行中\033[36m█\033[m エラー\033[31m█\033[m 終了\033[32m█\033[m")
 
     process_alive_list = [
         run_shell.Popen(f'python "{str(extensions)}" "{flname}" {process} {i}') for i in range(process)

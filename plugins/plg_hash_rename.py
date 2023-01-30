@@ -54,7 +54,7 @@ def main(starts, step, flname):
                 _, ext = os.path.splitext(sep)
                 try:
                     os.rename(sep, a + ext)
-                except FileExistsError:
+                except (FileExistsError, PermissionError):
                     os.remove(sep)
 
                 # ###-------------------------------------####
@@ -68,6 +68,7 @@ try:
 except Exception as e:
     with open(f"{starts}_error.txt", "w") as f:
         f.write(str(e))
+    exit(1)
 # end_time = time.perf_counter()
 
 # 経過時間を出力(秒)

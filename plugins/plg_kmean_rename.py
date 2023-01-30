@@ -68,12 +68,17 @@ def main(starts, step, flname):
                 try:
                     name = make_filename(img, sep)
                     os.rename(sep, name)
-                except Exception:
+                except (FileExistsError, PermissionError):
+                    time.sleep(1)
                     pass
                 # ###-------------------------------------### #
 
     os.chdir("..")
 
 
-# start_time = time.perf_counter()
-main(starts, step, flname)
+try:
+    main(starts, step, flname)
+except Exception as e:
+    with open(f"{starts}_error.txt", "w") as f:
+        f.write(str(e))
+    exit(1)

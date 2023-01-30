@@ -39,8 +39,7 @@ def main(starts, step, flname):
                 img = my_imread(sep)
                 if img is None:
                     break
-
-                img = cv2.blur(img, (11, 11))
+                img = cv2.bilateralFilter(img, 9, 75, 75)
                 # ###-------------------------------------### #
                 img2 = cv2.Laplacian(img, cv2.CV_32F, ksize=5).var()
 
@@ -51,7 +50,8 @@ def main(starts, step, flname):
                         # print(f"{img2}_{tem}{ext}")
                         os.rename(sep, f"{img2}_{tem}{ext}")
                         break
-                    except FileExistsError:
+                    except (FileExistsError, PermissionError):
+                        time.sleep(1)
                         tem = tem + 1
                 # ###-------------------------------------####
 
@@ -59,12 +59,13 @@ def main(starts, step, flname):
 
 
 # start_time = time.perf_counter()
-main(starts, step, flname)
+# main(starts, step, flname)
 try:
     main(starts, step, flname)
 except Exception as e:
     with open(f"{starts}_error.txt", "w") as f:
         f.write(str(e))
+    exit(1)
 # end_time = time.perf_counter()
 
 # 経過時間を出力(秒)

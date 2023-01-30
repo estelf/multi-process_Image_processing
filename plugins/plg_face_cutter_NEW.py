@@ -214,7 +214,7 @@ def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
         img = cv2.imdecode(n, cv2.IMREAD_COLOR)
-        return img[:,:,::-1]
+        return img[:, :, ::-1]
     except Exception as e:
         print(e)
         return None
@@ -250,7 +250,6 @@ def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", outpu
                     print(img_name)
                     os.remove(img_name)
 
-
     print("FINISH!!!", flush=True)
 
 
@@ -258,6 +257,12 @@ args = sys.argv
 starts = int(args[3])
 step = int(args[2])
 flname = args[1]
-os.chdir(flname)
-main(starts=int(args[3]), step=int(args[2]))
-os.chdir("..")
+
+try:
+    os.chdir(flname)
+    main(starts=int(args[3]), step=int(args[2]))
+    os.chdir("..")
+except Exception as e:
+    with open(f"{starts}_error.txt", "w") as f:
+        f.write(str(e))
+    exit(1)
