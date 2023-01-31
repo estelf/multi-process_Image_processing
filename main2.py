@@ -99,7 +99,7 @@ def expmain(flname, extensions, process):
     画像の加工プロセスを作成する部分。
     """
 
-    print("プラグイン動作開始")
+    print("\nプラグイン動作開始")
     print(f'python "{str(extensions)}" "{flname}" {process} {0}')
     print("実行状態凡例 実行中\033[36m█\033[m エラー\033[31m█\033[m 終了\033[32m█\033[m")
 
