@@ -3,7 +3,7 @@ import os
 import re
 import sys
 import time
-
+import imutils
 import cv2
 import numpy as np
 
@@ -21,7 +21,12 @@ flname = args[1]
 def my_imread(filename):
     try:
         n = np.fromfile(filename, np.uint8)
-        img = cv2.imdecode(n, cv2.IMREAD_GRAYSCALE)
+        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
+        height, width, ch = img.shape
+        if width > 256:
+            img = imutils.resize(img, width=256)
+        elif height > 256:
+            img = imutils.resize(img, height=256)
         return img
     except Exception as e:
         print(e)
@@ -39,6 +44,9 @@ def main(starts, step, flname):
                 img = my_imread(sep)
                 if img is None:
                     break
+
+                img = cv2.bilateralFilter(img, 9, 75, 75)
+                img = cv2.bilateralFilter(img, 9, 75, 75)
                 img = cv2.bilateralFilter(img, 9, 75, 75)
                 # ###-------------------------------------### #
                 img2 = cv2.Laplacian(img, cv2.CV_32F, ksize=5).var()
