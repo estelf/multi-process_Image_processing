@@ -22,7 +22,6 @@ class LandmarksDetector:
         self.shape_predictor = dlib.shape_predictor(predictor_model_path)
 
     def get_landmarks(self, image):
-
         img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         dets = self.detector(img, 1)
 
@@ -58,6 +57,19 @@ def cal_border(arr):
     # print(unique0, freq0)
     mode0 = unique0[np.argmax(freq0)]
     return (np.array(mode0)).astype(np.uint8)
+
+
+def my_padding(img, range=(0, 0, 0, 0), value=([0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0])):
+    value = [i.tolist() if type(i) is np.ndarray else i for i in value]
+    top, bottom, left, right = range
+    vtop, vbottom, vleft, vright = value
+
+    img = cv2.copyMakeBorder(img, top, 0, 0, 0, cv2.BORDER_CONSTANT, value=vtop)
+    img = cv2.copyMakeBorder(img, 0, bottom, 0, 0, cv2.BORDER_CONSTANT, value=vbottom)
+    img = cv2.copyMakeBorder(img, 0, 0, left, 0, cv2.BORDER_CONSTANT, value=vleft)
+    img = cv2.copyMakeBorder(img, 0, 0, 0, right, cv2.BORDER_CONSTANT, value=vright)
+
+    return img
 
 
 # ---------- 顔画像の切り出し --------------
@@ -100,7 +112,10 @@ def image_align(src_file, face_landmarks, output_size=1024, enable_padding=True)
     # Shrink.
     shrink = int(np.floor(qsize / output_size * 0.5))
     if shrink > 1:
-        rsize = (int(np.rint(float(img.size[0]) / shrink)), int(np.rint(float(img.size[1]) / shrink)))
+        rsize = (
+            int(np.rint(float(img.size[0]) / shrink)),
+            int(np.rint(float(img.size[1]) / shrink)),
+        )
         img = img.resize(rsize, PIL.Image.Resampling.LANCZOS)
         quad /= shrink
         qsize /= shrink
@@ -145,23 +160,24 @@ def image_align(src_file, face_landmarks, output_size=1024, enable_padding=True)
         # [round(np.mean(aabb[:,0])),round(np.mean(aabb[:,1])),round(np.mean(aabb[:,2]))]
         # pprint.pprint(img)
 
-        img = np.pad(
+        # img = np.pad(
+        #    array=img,
+        #    pad_width=((pad[1], pad[3]), (pad[0], pad[2]), (0, 0)),
+        #    mode="constant",
+        #    constant_values=(1, 2),
+        # )
+        # show(img)
+        img = my_padding(
             img,
-            ((pad[1], pad[3]), (pad[0], pad[2]), (0, 0)),
-            "constant",
-            constant_values=(
-                (
-                    cal_border(img[:16, :]),
-                    cal_border(img[-16:, :]),
-                ),
-                (
-                    cal_border(img[:, :16]),
-                    cal_border(img[:, -16:]),
-                ),
-                (0, 0),
+            (pad[1], pad[3], pad[0], pad[2]),
+            (
+                cal_border(img[:16, :]),
+                cal_border(img[-16:, :]),
+                cal_border(img[:, :16]),
+                cal_border(img[:, -16:]),
             ),
         )
-        # show(img)
+
         h, w, _ = img.shape
         y, x, _ = np.ogrid[:h, :w, :1]
         mask = np.maximum(
@@ -220,8 +236,12 @@ def my_imread(filename):
         return None
 
 
-def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", output_size=256, starts=0, step=0):
-
+def main(
+    landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat",
+    output_size=256,
+    starts=0,
+    step=0,
+):
     # 顔画像の切り出し
     landmarks_detector = LandmarksDetector(landmarks_model_path)
 
