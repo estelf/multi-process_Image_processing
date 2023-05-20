@@ -237,7 +237,7 @@ def my_imread(filename):
 
 
 def filereader():
-    with open("master.csv", "r", encoding="utf-8") as f:
+    with open("..\\master.csv", "r", encoding="utf-8") as f:
         a = [i.strip() for i in f.readlines()]
     return a
 
