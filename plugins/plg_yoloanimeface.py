@@ -20,8 +20,13 @@ flname = args[1]
 face_detector = dlib.simple_object_detector("./detector_face.svm")
 
 
-def detect(img_path):
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
 
+
+def detect(img_path):
     base = os.path.basename(img_path)[:-4]
     # 画像ファイルを開く
     image = my_imread(img_path)
@@ -72,8 +77,9 @@ def my_imread(filename):
 
 
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):

@@ -116,6 +116,22 @@ def expmain(flname, extensions, process):
         alive_check(polls, process_alive_list)
 
 
+def expWrapperExtensionsList(args, folde=None):
+    if folde is None:
+        folde = args.folder
+    list2csv([i.split(os.sep)[-1] for i in glob.glob(f"{folde}{os.sep}*.*")])
+
+    if args.extensions:
+        for iii in str(args.extensions).split(","):
+            expmain(folde, iii, args.process)
+
+
+def list2csv(li):
+    with open("master.csv", "w", encoding="utf-8") as f:
+        for i in li:
+            f.write(f"{i}\n")
+
+
 parser = argparse.ArgumentParser(description="マルチプロセス、プラグイン機能に対応した画像一括編集・動画切り出しプログラムです。")
 parser.add_argument("folder", help="データのあるフォルダ名")  # 必須の引数を追加
 parser.add_argument(
@@ -155,12 +171,9 @@ if args.non_split is False:
                 print(f"失敗しました\n{cmd}")
                 continue
             else:
-
                 print("成功しました")
 
-            if args.extensions:
-                for iii in str(args.extensions).split(","):
-                    expmain(str(num), iii, args.process)
+            expWrapperExtensionsList(args, str(num))
 
             end_time = time.perf_counter()
             # 経過時間を出力(秒)
@@ -171,13 +184,14 @@ if args.non_split is False:
             print(f"未対応file{i}")
         # straw step
 else:
-    if args.extensions:
-        start_time = time.perf_counter()  # 計測開始
-        for iii in str(args.extensions).split(","):
-            expmain(args.folder, iii, args.process)
+    start_time = time.perf_counter()  # 計測開始
 
-        end_time = time.perf_counter()
-        # 経過時間を出力(秒)
-        elapsed_time = end_time - start_time
-        print("\n総処理時間", elapsed_time, "秒")
-        print()
+    expWrapperExtensionsList(args)
+
+    end_time = time.perf_counter()
+    # 経過時間を出力(秒)
+    elapsed_time = end_time - start_time
+    print("\n総処理時間", elapsed_time, "秒")
+    print()
+
+# os.remove("master.csv")

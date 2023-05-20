@@ -41,8 +41,9 @@ def my_imwrite(filename, img):
 
 
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
@@ -57,6 +58,12 @@ def main(starts, step, flname):
                 # ###-------------------------------------### #
 
     os.chdir("..")
+
+
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
 
 
 # start_time = time.perf_counter()

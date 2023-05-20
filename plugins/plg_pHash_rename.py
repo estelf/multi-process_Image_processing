@@ -28,9 +28,16 @@ def my_imread(filename):
         return None
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     hash_func = cv2.img_hash.PHash_create()
     time.sleep(1)
     for i, sep in enumerate(aldf):

@@ -26,6 +26,12 @@ def my_imread(filename):
         return None
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def my_imwrite(filename, img):
     try:
         ext = os.path.splitext(filename)[1]
@@ -42,8 +48,9 @@ def my_imwrite(filename, img):
 
 
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):

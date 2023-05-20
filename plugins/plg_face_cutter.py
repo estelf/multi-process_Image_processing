@@ -12,6 +12,12 @@ import scipy.ndimage
 import time
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 # --------- ランドマーク検出 -------------
 class LandmarksDetector:
     def __init__(self, predictor_model_path):
@@ -22,7 +28,6 @@ class LandmarksDetector:
         self.shape_predictor = dlib.shape_predictor(predictor_model_path)
 
     def get_landmarks(self, image):
-
         img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         dets = self.detector(img, 1)
 
@@ -182,11 +187,10 @@ def my_imread(filename):
 
 
 def main(landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat", output_size=256, starts=0, step=0):
-
     # 顔画像の切り出し
     landmarks_detector = LandmarksDetector(landmarks_model_path)
 
-    dirlist_my = glob.glob("*.*")
+    dirlist_my = filereader()
     time.sleep(1)
     for ii, img_name in enumerate(dirlist_my):
         if re.search(r".*\.j?pe?n?g$", str(img_name), re.I):

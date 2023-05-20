@@ -14,6 +14,12 @@ step = int(args[2])
 flname = args[1]
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def ryousika(img):
     Z = img.reshape((-1, 3))
     # np.float32型に変換
@@ -87,7 +93,6 @@ def resize_img(img):
 
     # 縦長画像→幅を拡張する
     if height > width:
-
         left = cal_border(img[:, :16])
         right = cal_border(img[:, -16:])
         print("b", left, right)
@@ -164,8 +169,9 @@ my_imwrite("test.png", img)"""
 
 
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):

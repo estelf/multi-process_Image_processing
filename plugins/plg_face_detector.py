@@ -21,6 +21,12 @@ flname = args[1]
 """
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def translate(img_pass):
     img = my_imread(img_pass)
     base, ext = os.path.splitext(img_pass)
@@ -59,9 +65,10 @@ def my_imwrite(filename, img):
 
 def main(starts, step, flname):
     detector = dlib.get_frontal_face_detector()  # cnn_face_detection_model_v1 also can be used
+    aldf = filereader()
     os.chdir(flname)
     os.makedirs("face", exist_ok=True)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):

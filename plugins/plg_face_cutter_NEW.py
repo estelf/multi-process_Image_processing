@@ -236,6 +236,12 @@ def my_imread(filename):
         return None
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def main(
     landmarks_model_path="..\\shape_predictor_68_face_landmarks.dat",
     output_size=256,
@@ -245,7 +251,7 @@ def main(
     # 顔画像の切り出し
     landmarks_detector = LandmarksDetector(landmarks_model_path)
 
-    dirlist_my = glob.glob("*.*")
+    dirlist_my = filereader()
     time.sleep(1)
     for ii, img_name in enumerate(dirlist_my):
         if re.search(r".*\.j?pe?n?g$", str(img_name), re.I):

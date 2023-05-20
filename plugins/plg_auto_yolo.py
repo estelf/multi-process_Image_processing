@@ -17,7 +17,6 @@ flname = args[1]
 
 
 def detect_contour(path):
-
     # 画像を読込
     src = my_imread(path)
     # src = src[:, 110:, :]
@@ -42,7 +41,6 @@ def detect_contour(path):
 
     # 各輪郭に対する処理
     for i in range(0, len(contours)):
-
         # 輪郭の領域を計算
         area = cv2.contourArea(contours[i])
 
@@ -103,14 +101,20 @@ def my_imwrite(filename, img):
         return False
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
 
     os.makedirs("label", exist_ok=True)
     with open("label\\classes.txt", "w") as f:
         f.write("umamusume")
 
-    aldf = glob.glob("*.*")
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):

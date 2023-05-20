@@ -27,6 +27,12 @@ def translate(img_pass):
     os.remove(img_pass)
 
 
+def filereader():
+    with open("master.csv", "r", encoding="utf-8") as f:
+        a = [i.strip() for i in f.readlines()]
+    return a
+
+
 # note 26702
 
 
@@ -56,8 +62,9 @@ def my_imwrite(filename, img):
 
 
 def main(starts, step, flname):
+    aldf = filereader()
     os.chdir(flname)
-    aldf = glob.glob("*.*")
+
     time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.(jp.?g|webp|bmp|png)", str(sep), re.I):
