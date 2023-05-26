@@ -1,11 +1,10 @@
-import glob
 import os
 import re
 import sys
-import time
+
 
 import cv2
-import numpy as np
+import utilforplgs as ufp
 
 args = sys.argv
 
@@ -18,7 +17,7 @@ flname = args[1]
 
 def detect_contour(path):
     # 画像を読込
-    src = my_imread(path)
+    src = ufp.my_imread(path)
     # src = src[:, 110:, :]
     # グレースケール画像へ変換
     # gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
@@ -70,55 +69,23 @@ def detect_contour(path):
     # cv2.waitKey(0)
 
     # 終了処理
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
     h, w, _ = src.shape
-    # print(f"{0} {(x2 + x1) / (2 * w)} {(y2 + y1) / (2 * h)} {(x2 - x1) / w} {(y2 - y1) / h}")
+    # #print(f"{0} {(x2 + x1) / (2 * w)} {(y2 + y1) / (2 * h)} {(x2 - x1) / w} {(y2 - y1) / h}")
     return f"{0} {(x2 + x1) / (2 * w)} {(y2 + y1) / (2 * h)} {(x2 - x1) / w} {(y2 - y1) / h}"
 
 
-def my_imread(filename):
-    try:
-        n = np.fromfile(filename, np.uint8)
-        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
-        return img
-    except Exception as e:
-        print(e)
-        return None
-
-
-def my_imwrite(filename, img):
-    try:
-        ext = os.path.splitext(filename)[1]
-        result, n = cv2.imencode(ext, img)
-        if result:
-            with open(filename, mode="w+b") as f:
-                n.tofile(f)
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e)
-        return False
-
-
-def filereader():
-    with open("master.csv", "r", encoding="utf-8") as f:
-        a = [i.strip() for i in f.readlines()]
-    return a
-
-
+@ufp.Trace2file(starts)
 def main(starts, step, flname):
-    aldf = filereader()
+    aldf = ufp.filereader()
     os.chdir(flname)
 
     os.makedirs("label", exist_ok=True)
     with open("label\\classes.txt", "w") as f:
         f.write("umamusume")
-
-    time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
-            # print(i,sep)
+            # #print(i,sep)
             if (i - starts) % step == 0:
                 # ###-------------------------------------### #
                 a = detect_contour(sep)
@@ -129,15 +96,4 @@ def main(starts, step, flname):
     os.chdir("..")
 
 
-# start_time = time.perf_counter()
-try:
-    main(starts, step, flname)
-except Exception as e:
-    with open(f"{starts}_error.txt", "w") as f:
-        f.write(str(e))
-    exit(1)
-# end_time = time.perf_counter()
-
-# 経過時間を出力(秒)
-# elapsed_time = end_time - start_time
-# print(elapsed_time,"秒")
+main(starts, step, flname)

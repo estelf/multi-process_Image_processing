@@ -119,7 +119,6 @@ def expmain(flname, extensions, process):
 def expWrapperExtensionsList(args, folde=None):
     if folde is None:
         folde = args.folder
-    
     if args.extensions:
         for iii in str(args.extensions).split(","):
             list2csv([i.split(os.sep)[-1] for i in glob.glob(f"{folde}{os.sep}*.*")])

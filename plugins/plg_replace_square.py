@@ -1,10 +1,9 @@
-import glob
+import utilforplgs as ufp
 import os
 import sys
 import re
 import cv2
 import numpy as np
-import time
 
 args = sys.argv
 
@@ -12,12 +11,6 @@ args = sys.argv
 starts = int(args[3])
 step = int(args[2])
 flname = args[1]
-
-
-def filereader():
-    with open("master.csv", "r", encoding="utf-8") as f:
-        a = [i.strip() for i in f.readlines()]
-    return a
 
 
 def ryousika(img):
@@ -43,8 +36,8 @@ def ryousika(img):
 def cal_border(arr):
     arr = ryousika(arr)
     unique0, freq0 = np.unique(arr, return_counts=True, axis=0)
-    # print("a")
-    # print(unique0, freq0)
+    # #print("a")
+    # #print(unique0, freq0)
     mode0 = unique0[np.argmax(freq0)]
     return (np.array(mode0)).astype(np.uint8)
 
@@ -89,13 +82,13 @@ def resize_img(img):
     # マスク用に画像本体部分が255になるようなデータ生成
     mask = np.copy(img)
     mask[:] = 255
-    # print(mask.shape)
+    # #print(mask.shape)
 
     # 縦長画像→幅を拡張する
     if height > width:
         left = cal_border(img[:, :16])
         right = cal_border(img[:, -16:])
-        print("b", left, right)
+        # print("b", left, right)
 
         padding_img = cv2.copyMakeBorder(
             img, 0, 0, 0, height - (width + padding_half), cv2.BORDER_CONSTANT, value=right.tolist()
@@ -115,7 +108,7 @@ def resize_img(img):
         top = cal_border(img[:16])
         bottom = cal_border(img[-16:])
 
-        print("b", top, bottom)
+        # print("b", top, bottom)
         padding_img = cv2.copyMakeBorder(
             img, 0, width - (height + padding_half), 0, 0, cv2.BORDER_CONSTANT, value=bottom.tolist()
         )
@@ -133,65 +126,24 @@ def resize_img(img):
     return padding_img
 
 
-def my_imread(filename):
-    try:
-        n = np.fromfile(filename, np.uint8)
-        img = cv2.imdecode(n, cv2.IMREAD_COLOR)
-
-        if len(list(img.shape)) != 3:
-            img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-        return img
-    except Exception as e:
-        print(e)
-        return None
-
-
-def my_imwrite(filename, img):
-    try:
-        ext = os.path.splitext(filename)[1]
-        result, n = cv2.imencode(ext, img)
-        if result:
-            with open(filename, mode="w+b") as f:
-                n.tofile(f)
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e)
-        return False
-
-
-"""img = my_imread("000a4d5c2956a7c1058eaab08a547558.png")
-img = resize_img(img)
-cv2.imshow("a", img)
-cv2.waitKey()
-my_imwrite("test.png", img)"""
-
-
+@ufp.Trace2file(starts)
 def main(starts, step, flname):
-    aldf = filereader()
+    aldf = ufp.filereader()
     os.chdir(flname)
-
-    time.sleep(1)
     for i, sep in enumerate(aldf):
         if re.search(r".*\.j?pe?n?g$", str(sep), re.I):
-            # print(i,sep)
+            # #print(i,sep)
             if (i - starts) % step == 0:
-                # print(i,starts,step)
-                img = my_imread(sep)
+                # #print(i,starts,step)
+                img = ufp.my_imread(sep)
 
                 # ###-------------------------------------### #
                 img = resize_img(img)
-                my_imwrite(sep, img)
+                ufp.my_imwrite(sep, img)
                 # ###-------------------------------------### #
 
     os.chdir("..")
 
 
 # start_time = time.perf_counter()
-try:
-    main(starts, step, flname)
-except Exception as e:
-    with open(f"{starts}_error.txt", "w") as f:
-        f.write(str(e))
-    exit(1)
+main(starts, step, flname)
