@@ -5,6 +5,9 @@ import cv2
 import os
 import numpy as np
 import traceback
+from PIL import ImageFile
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def my_imread(filename, readtype=cv2.IMREAD_COLOR):
@@ -17,8 +20,11 @@ def my_imread(filename, readtype=cv2.IMREAD_COLOR):
 
         return img
     except Exception as e:
+        print(filename)
         print(e)
         print(traceback.format_exc())
+        with open("f_error.txt", "w", encoding="utf-8") as f:
+            f.write(str(filename) + "\n---\n" + str(traceback.format_exc()))
         return None
 
 
@@ -48,9 +54,9 @@ def Trace2file(num):
     """エラー検知でこれーた"""
 
     def _Trace2file(funk):
-        def wrapper(*args):
+        def wrapper(*args, **kwargs):
             try:
-                funk(*args)
+                funk(*args, **kwargs)
             except Exception as e:
                 with open(f"{num}_error.txt", "w", encoding="utf-8") as f:
                     print(str(e) + "\n---\n" + str(traceback.format_exc()))

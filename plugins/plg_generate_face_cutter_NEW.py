@@ -10,6 +10,10 @@ import numpy as np
 import PIL.Image
 import scipy.ndimage
 
+from PIL import ImageFile
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 # --------- ランドマーク検出 -------------
 class LandmarksDetector:
@@ -241,7 +245,7 @@ def main(
     # 顔画像の切り出し
     landmarks_detector = LandmarksDetector(landmarks_model_path)
 
-    dirlist_my = ufp.filereader()
+    dirlist_my = ufp.filereader("../master.csv")
     for ii, img_name in enumerate(dirlist_my):
         if re.search(r".*\.j?pe?n?g$", str(img_name), re.I):
             if (ii - starts) % step == 0:
